@@ -23,17 +23,18 @@ async function robot() {
 
 	async function searchImagesBySentences() {
 		for (const sentence of content.sentences) {
-			sentence.imageURL = await executeSearch(sentence.searchTerm);
+			sentence.imageURL = await executeSearch(sentence);
 		}
 	}
 
-	async function executeSearch(search) {
+	async function executeSearch(sentence) {
 		const res = await customsearch.cse.list({
 			cx: googleSearchAPIKey.search_engine_id,
-			q: search,
+			q: sentence.searchTerm,
 			auth: googleSearchAPIKey.api_key,
 			searchType: "image",
 			imgSize: "huge",
+			imgType: "news",
 			num: 1
 		});
 		return res.data.items[0].link;
