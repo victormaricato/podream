@@ -1,15 +1,5 @@
 const state = require("./state.js");
 
-/*
-FOR EACH SENTENCE:
-    GET A ENTITY -- WORK ON WHICH ENTITY 
-    GET IMAGE
-        SENTENCE.imageURL = imageURL
-    DOWNLOAD IMAGE
-    SAVE IMAGE IN content/images/ dir
-    IMAGE NAME = TIMESTAMP-ENTITY.png
-*/
-
 async function robot() {
 	const content = state.load();
 
