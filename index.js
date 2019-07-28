@@ -10,7 +10,7 @@ const robots = {
 async function start() {
 	//await robots.input();
 	//await robots.storage();
-	await robots.transcribing();
+	//await robots.transcribing();
 	await robots.text();
 	await robots.timestamp();
 }

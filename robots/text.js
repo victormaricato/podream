@@ -50,7 +50,9 @@ async function robot() {
 
 		entities.forEach(entity =>
 			entityAnalysis.push({
-				name: entity.name
+				name: entity.name,
+				salience: entity.salience,
+				type: entity.type
 			})
 		);
 		return entityAnalysis;
