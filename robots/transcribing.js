@@ -37,17 +37,21 @@ async function transcribe() {
 		const [response] = await operation.promise();
 
 		response.results.forEach(result => {
-			transcript = result.alternatives[0].transcript;
 			detailedTranscription = processResult(result);
 		});
+
+		const transcript = response.results
+			.map(result => result.alternatives[0].transcript)
+			.join("\n");
+		console.log(transcript);
 		return [transcript, detailedTranscription];
 	}
 
 	async function uploadAudio(audioPath, fileName) {
 		const bucketName = "podream-audios";
 
-		// Uploads a local file to the bucket
 		await storage.bucket(bucketName).upload(audioPath);
+
 		fileUri = `gs://${bucketName}/${fileName}`;
 		return fileUri;
 	}
