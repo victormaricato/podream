@@ -54,14 +54,6 @@ async function robot() {
 			})
 		);
 		return entityAnalysis;
-
-		// entities.forEach(entity => {
-		// 	console.log(entity.name);
-		// 	console.log(` - Type: ${entity.type}, Salience: ${entity.salience}`);
-		// 	if (entity.metadata && entity.metadata.wikipedia_url) {
-		// 		console.log(` - Wikipedia URL: ${entity.metadata.wikipedia_url}$`);
-		// 	}
-		// });
 	}
 }
 
