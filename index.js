@@ -7,7 +7,7 @@ const robots = {
 
 async function start() {
 	//robots.input();
-	//robots.transcribing();
+	//await robots.transcribing();
 	robots.text();
 }
 

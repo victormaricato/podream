@@ -1,8 +1,68 @@
 const state = require("./state.js");
+const language = require("@google-cloud/language");
+const sentenceBoundaryDetection = require("sbd");
+const client = new language.LanguageServiceClient();
 
-function robot() {
+async function robot() {
 	const content = state.load();
-	console.log(content.transcription);
+
+	await processText();
+	await analyseSentences();
+
+	state.save(content);
+
+	async function processText() {
+		splittedText = await splitText(content.transcription);
+		await getSentences(splittedText);
+
+		function splitText(text) {
+			return text.split("\n").join(" ");
+		}
+
+		async function getSentences(text) {
+			content.sentences = [];
+			const sentences = await sentenceBoundaryDetection.sentences(text);
+			sentences.forEach(async sentence => {
+				await content.sentences.push({
+					text: sentence,
+					keywords: [],
+					images: [],
+					analysis: []
+				});
+			});
+		}
+	}
+
+	async function analyseSentences() {
+		for (const sentence of content.sentences) {
+			sentence.analysis = await analyseEntities(sentence);
+		}
+	}
+	async function analyseEntities(sentence) {
+		entityAnalysis = [];
+		document = {
+			content: sentence.text,
+			type: "PLAIN_TEXT"
+		};
+		const [result] = await client.analyzeEntities({ document });
+
+		const entities = result.entities;
+
+		entities.forEach(entity =>
+			entityAnalysis.push({
+				name: entity.name
+			})
+		);
+		return entityAnalysis;
+
+		// entities.forEach(entity => {
+		// 	console.log(entity.name);
+		// 	console.log(` - Type: ${entity.type}, Salience: ${entity.salience}`);
+		// 	if (entity.metadata && entity.metadata.wikipedia_url) {
+		// 		console.log(` - Wikipedia URL: ${entity.metadata.wikipedia_url}$`);
+		// 	}
+		// });
+	}
 }
 
 module.exports = robot;
