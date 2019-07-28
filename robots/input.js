@@ -5,22 +5,26 @@ const fs = require("fs");
 function robot() {
 	const content = {};
 
-	content.audioPath = askAudioPath();
-	console.log(content.audioPath);
+	content.fileName = askFileName();
+	content.audioPath = getAudioPath(content.fileName);
 	state.save(content);
 
-	function askAudioPath() {
-		return checkFileExists(
-			"./content/audios/" +
-				readline.question(
-					'Type the audio filename (it should be placed on "./content/audios"): '
-				)
+	function askFileName() {
+		return readline.question(
+			'Type the .WAV filename (it should be placed on "./content/audios"): '
 		);
 	}
 
-	function checkFileExists(path) {
-		if (fs.existsSync(path)) {
+	function getAudioPath(fileName) {
+		return checkFile("./content/audios/" + fileName);
+	}
+
+	function checkFile(path) {
+		format = path.slice(-3);
+		if (fs.existsSync(path) && format == "wav") {
 			return path;
+		} else if (format != "wav") {
+			console.error("File is not .wav");
 		} else {
 			console.error("File does not exists");
 		}
