@@ -1,4 +1,13 @@
+process.env["GOOGLE_APPLICATION_CREDENTIALS"] =
+	"credentials/gcp-credentials.json";
+
 const speech = require("@google-cloud/speech").v1p1beta1;
+
+// Imports the Google Cloud client library
+const { Storage } = require("@google-cloud/storage");
+// Creates a client
+const storage = new Storage();
+
 const fs = require("fs");
 
 const state = require("./state.js");
@@ -8,17 +17,18 @@ async function transcribe() {
 
 	const client = new speech.SpeechClient();
 	const audioPath = state.load().audioPath;
+	const fileName = state.load().fileName;
 
-	const processedAudio = processAudio(audioPath);
+	const gcsUri = await uploadAudio(audioPath, fileName);
 
-	const apiRequest = getRequestInfo(processedAudio);
+	const apiRequest = getRequestInfo(gcsUri);
 
-	const [transcription, detailed_transcription] = await requestTranscription(
+	const [transcription, detailedTranscript] = await requestTranscription(
 		apiRequest
 	);
 
 	content.transcription = transcription;
-	content.detailed_transcription = detailed_transcription;
+	content.detailedTranscription = detailedTranscript;
 
 	state.save(content);
 
@@ -28,21 +38,26 @@ async function transcribe() {
 
 		response.results.forEach(result => {
 			transcript = result.alternatives[0].transcript;
-			detailed_result = processResult(result);
+			detailedTranscription = processResult(result);
 		});
-		return [transcript, detailed_result];
+		return [transcript, detailedTranscription];
 	}
 
-	function processAudio(audioPath) {
-		return fs.readFileSync(audioPath).toString("base64");
+	async function uploadAudio(audioPath, fileName) {
+		const bucketName = "podream-audios";
+
+		// Uploads a local file to the bucket
+		await storage.bucket(bucketName).upload(audioPath);
+		fileUri = `gs://${bucketName}/${fileName}`;
+		return fileUri;
 	}
 
-	function getRequestInfo(processedAudio) {
+	function getRequestInfo(gcsUri) {
 		const audio = {
-			content: processedAudio
+			uri: gcsUri
 		};
 		const config = {
-			encoding: "OGG_OPUS",
+			encoding: "LINEAR16",
 			sampleRateHertz: 16000,
 			languageCode: "pt-BR",
 			enableAutomaticPunctuation: true,
@@ -58,7 +73,7 @@ async function transcribe() {
 	}
 
 	function processResult(result) {
-		detailed_result = [];
+		detailedResult = [];
 		result.alternatives[0].words.forEach(wordInfo => {
 			const startSecs =
 				`${wordInfo.startTime.seconds}` +
@@ -68,7 +83,7 @@ async function transcribe() {
 				`${wordInfo.endTime.seconds}` +
 				`.` +
 				wordInfo.endTime.nanos / 100000000;
-			detailed_result.push({
+			detailedResult.push({
 				startSecs: parseFloat(startSecs),
 				endSecs: parseFloat(endSecs),
 				word: wordInfo.word,
@@ -76,7 +91,7 @@ async function transcribe() {
 				speakerTag: wordInfo.speakerTag
 			});
 		});
-		return detailed_result;
+		return detailedResult;
 	}
 }
 
