@@ -67,3 +67,4 @@ credentials/
 .vscode/
 
 content.json*
+content/audios/*
