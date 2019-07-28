@@ -67,4 +67,6 @@ credentials/
 .vscode/
 
 content.json*
-content/audios/*
+content/audios/*.wav
+content/audios/*.mp3
+content/audios/*.ogg
