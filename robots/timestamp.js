@@ -4,6 +4,7 @@ async function robot() {
 	const content = state.load();
 
 	await getSentencesTimestamp();
+
 	state.save(content);
 
 	async function getSentencesTimestamp() {

@@ -2,63 +2,36 @@ process.env["GOOGLE_APPLICATION_CREDENTIALS"] =
 	"credentials/gcp-credentials.json";
 
 const speech = require("@google-cloud/speech").v1p1beta1;
-
-// Imports the Google Cloud client library
-const { Storage } = require("@google-cloud/storage");
-// Creates a client
-const storage = new Storage();
-
-const fs = require("fs");
+const client = new speech.SpeechClient();
 
 const state = require("./state.js");
 
 async function transcribe() {
 	const content = state.load();
 
-	const client = new speech.SpeechClient();
-	const audioPath = state.load().audioPath;
-	const fileName = state.load().fileName;
-
-	const gcsUri = await uploadAudio(audioPath, fileName);
-
-	const apiRequest = getRequestInfo(gcsUri);
-
-	const [transcription, detailedTranscript] = await requestTranscription(
-		apiRequest
-	);
-
-	content.transcription = transcription;
-	content.detailedTranscription = detailedTranscript;
+	await requestTranscription();
 
 	state.save(content);
 
-	async function requestTranscription(request) {
-		const [operation] = await client.longRunningRecognize(request);
+	async function requestTranscription() {
+		const [operation] = await client.longRunningRecognize(getRequestInfo());
 		const [response] = await operation.promise();
 
 		response.results.forEach(result => {
-			detailedTranscription = processResult(result);
+			detailedTranscription = processDetailedResult(result);
 		});
 
 		const transcript = response.results
 			.map(result => result.alternatives[0].transcript)
 			.join("\n");
-		console.log(transcript);
-		return [transcript, detailedTranscription];
+
+		content.transcription = transcript;
+		content.detailedTranscription = detailedTranscription;
 	}
 
-	async function uploadAudio(audioPath, fileName) {
-		const bucketName = "podream-audios";
-
-		await storage.bucket(bucketName).upload(audioPath);
-
-		fileUri = `gs://${bucketName}/${fileName}`;
-		return fileUri;
-	}
-
-	function getRequestInfo(gcsUri) {
+	function getRequestInfo() {
 		const audio = {
-			uri: gcsUri
+			uri: content.gcsUri
 		};
 		const config = {
 			encoding: "LINEAR16",
@@ -76,7 +49,7 @@ async function transcribe() {
 		return request;
 	}
 
-	function processResult(result) {
+	function processDetailedResult(result) {
 		detailedResult = [];
 		result.alternatives[0].words.forEach(wordInfo => {
 			const startSecs =
