@@ -65,3 +65,5 @@ credentials/
 
 .DS_Store
 .vscode/
+
+content.json*
