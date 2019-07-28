@@ -18,9 +18,10 @@ async function robot() {
 		for (const word of words) {
 			b++;
 			if (sentences[a].search(word) == -1) {
-				endSecs = content.detailedTranscription[b - 2].endSecs;
+				detailedTranscript = content.detailedTranscription[b - 2];
 				sentence = content.sentences[a];
-				sentence.endSecs = endSecs;
+				sentence.endSecs = detailedTranscript.endSecs;
+				sentence.startSecs = detailedTranscript.startSecs;
 				a++;
 			}
 		}
