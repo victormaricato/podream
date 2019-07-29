@@ -7,15 +7,6 @@ const googleSearchAPIKey = require("../credentials/gcp-credentials.json");
 
 const imageDownloader = require("image-downloader");
 
-/*
-FOR EACH SENTENCE:
-    GET IMAGE
-        SENTENCE.imageURL = imageURL
-    DOWNLOAD IMAGE
-    SAVE IMAGE IN content/images/ dir
-    IMAGE NAME = TIMESTAMP-ENTITY.png
-*/
-
 async function robot() {
 	const content = state.load();
 
