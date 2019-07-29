@@ -1,6 +1,7 @@
 const state = require("./state.js");
 const fs = require("fs");
 const videoshow = require("videoshow");
+const naturalSort = require("javascript-natural-sort");
 const gm = require("gm").subClass({ imageMagick: true });
 
 const originalDir = "./content/images/";
@@ -15,7 +16,6 @@ async function robot() {
 	async function acquireImages() {
 		originalFiles = fs.readdirSync(originalDir);
 		imagesList = [];
-		resizedImagesList = [];
 		originalFiles.forEach(file => {
 			if (file.slice(-3) == "png") {
 				imagesList.push({
@@ -25,9 +25,11 @@ async function robot() {
 			}
 		});
 
-		await imagesList.forEach(image => convertImage(image));
+		for await (const image of imagesList) {
+			await convertImage(image);
+		}
 
-		await populateImageList();
+		populateImageList();
 	}
 
 	async function convertImage(image) {
@@ -67,7 +69,8 @@ async function robot() {
 	}
 
 	async function populateImageList() {
-		resizedFilenames = await fs.readdirSync(resizedDir);
+		resizedFilenames = fs.readdirSync(resizedDir).sort(naturalSort);
+		console.log(resizedFilenames);
 		resizedImagesList = [];
 		for (const file of resizedFilenames) {
 			if (file.slice(-3) == "png") {
