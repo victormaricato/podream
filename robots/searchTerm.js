@@ -31,31 +31,31 @@ async function robot() {
 	function chooseEntity(sentence) {
 		amountOfKeywords = sentence.keywords.length;
 		currentSentenceIndex = content.sentences.indexOf(sentence);
-		previousIndex = currentSentenceIndex--;
+		previousIndex = currentSentenceIndex - 2;
 
 		for (const keyword of sentence.keywords) {
-			if (sentence.searchTerm.length > 0 && !/\s/.test(sentence.searchTerm)) {
-				sentence.searchTerm = sentence.searchTerm + " " + keyword.name;
-				amountOfKeywords = 0;
-			} else if (
+			if (
 				sentence.searchTerm.length > 0 &&
-				/\s/.test(sentence.searchTerm)
+				sentence.searchTerm.indexOf(" ") == -1
 			) {
-				sentence.searchTerm = sentence.searchTerm;
+				sentence.searchTerm = sentence.searchTerm + " " + keyword.name;
 			} else {
 				if (amountOfKeywords > 0) {
 					if (
 						/^[A-Z]/.test(keyword.name[0]) &
 						(keyword.type != "ORGANIZATION")
 					) {
+						amountOfKeywords = 0;
 						sentence.searchTerm = keyword.name;
+					} else if (amountOfKeywords > 1) {
+						sentence.searchTerm =
+							sentence.keywords[0].name + " " + sentence.keywords[1].name;
 					}
 				}
 			}
-			amountOfKeywords--;
 		}
 
-		if (!/\s/.test(sentence.searchTerm)) {
+		if (sentence.searchTerm.indexOf(" ") == -1) {
 			if (sentence.searchTerm.length > 0) {
 				if (sentence.keywords.length > 1) {
 					sentence.searchTerm =
@@ -67,46 +67,43 @@ async function robot() {
 						content.sentences[previousIndex].keywords[0].name;
 				}
 			} else {
-				if (sentence.analysis.length > 1) {
-					sentence.searchTerm =
-						sentence.analysis[0].name + " " + sentence.analysis[1].name;
-				} else if (sentence.analysis.length > 0) {
-					if (content.sentences[previousIndex].keywords.length > 0) {
+				try {
+					if (sentence.analysis.length > 1) {
 						sentence.searchTerm =
-							sentence.analysis[0].name +
-							content.sentences[previousIndex].keywords[0].name;
+							sentence.analysis[0].name + " " + sentence.analysis[1].name;
+					} else if (sentence.analysis.length > 0) {
+						if (content.sentences[previousIndex].keywords.length > 0) {
+							sentence.searchTerm =
+								sentence.analysis[0].name +
+								" " +
+								content.sentences[previousIndex].keywords[0].name;
+						} else {
+							sentence.searchTerm =
+								content.sentences[previousIndex].keywords[0].name +
+								" " +
+								content.sentences[currentSentenceIndex + 1].keywords[0].name;
+						}
 					} else {
-						sentence.searchTerm =
-							content.sentences[previousIndex - 2].keywords[0].name +
-							" " +
-							content.sentences[currentSentenceIndex + 2].keywords[0].name;
+						if (
+							content.sentences[previousIndex].keywords.length > 0 &&
+							content.sentences[currentSentenceIndex + 1].keywords.length > 0
+						) {
+							sentence.searchTerm =
+								content.sentences[previousIndex].keywords[0].name +
+								" " +
+								content.sentences[currentSentenceIndex + 1].keywords[0].name;
+						} else if (
+							content.sentences[previousIndex].analysis.length > 0 &&
+							content.sentences[currentSentenceIndex + 1].analysis.length > 0
+						) {
+							sentence.searchTerm =
+								content.sentences[previousIndex].analysis[0].name +
+								" " +
+								content.sentences[currentSentenceIndex + 1].analysis[0].name;
+						}
 					}
-				} else {
-					if (
-						content.sentences[previousIndex - 2].keywords.length > 0 &&
-						content.sentences[currentSentenceIndex + 2].keywords.length > 0
-					) {
-						sentence.searchTerm =
-							content.sentences[previousIndex - 2].keywords[0].name +
-							" " +
-							content.sentences[currentSentenceIndex + 2].keywords[0].name;
-					} else if (
-						content.sentences[previousIndex - 2].analysis.length > 0 &&
-						content.sentences[currentSentenceIndex + 2].analysis.length > 0
-					) {
-						sentence.searchTerm =
-							content.sentences[previousIndex - 2].analysis[0].name +
-							" " +
-							content.sentences[currentSentenceIndex + 2].analysis[0].name;
-					}
-					try {
-						sentence.searchTerm =
-							content.sentences[previousIndex - 2].searchTerm +
-							" " +
-							content.sentences[currentSentenceIndex + 2].searchTerm;
-					} catch {
-						sentence.searchTerm = "audio";
-					}
+				} catch {
+					sentence.searchTerm = "audio";
 				}
 			}
 		}
