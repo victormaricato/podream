@@ -6,7 +6,8 @@ const robots = {
 	text: require("./robots/text.js"),
 	timestamp: require("./robots/timestamp.js"),
 	searchTerm: require("./robots/searchTerm.js"),
-	image: require("./robots/image.js")
+	image: require("./robots/image.js"),
+	video: require("./robots/video.js")
 };
 
 async function start() {
@@ -16,7 +17,8 @@ async function start() {
 	//await robots.text();
 	//await robots.timestamp();
 	//await robots.searchTerm();
-	await robots.image();
+	//await robots.image();
+	await robots.video();
 }
 
 start();
