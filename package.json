@@ -4,6 +4,7 @@
 		"@google-cloud/speech": "^3.2.3",
 		"@google-cloud/storage": "^3.0.3",
 		"googleapis": "^41.0.1",
+		"image-downloader": "^3.4.2",
 		"readline-sync": "^1.4.9",
 		"sbd": "^1.0.16"
 	}

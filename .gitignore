@@ -70,3 +70,4 @@ content.json*
 content/audios/*.wav
 content/audios/*.mp3
 content/audios/*.ogg
+content/images/*.png
