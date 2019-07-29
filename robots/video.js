@@ -9,7 +9,6 @@ const resizedDir = "./content/images/resized/";
 async function robot() {
 	const content = state.load();
 	await acquireImages();
-	content.images = content.images.sort();
 	//await createVideo();
 	state.save(content);
 
@@ -75,6 +74,7 @@ async function robot() {
 				resizedImagesList.push(resizedDir + file);
 			}
 		}
+
 		content.images = resizedImagesList;
 	}
 	async function createVideo() {
