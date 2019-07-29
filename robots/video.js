@@ -70,7 +70,6 @@ async function robot() {
 
 	async function populateImageList() {
 		resizedFilenames = fs.readdirSync(resizedDir).sort(naturalSort);
-		console.log(resizedFilenames);
 		resizedImagesList = [];
 		for (const file of resizedFilenames) {
 			if (file.slice(-3) == "png") {
