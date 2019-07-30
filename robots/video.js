@@ -2,7 +2,9 @@ const state = require("./state.js");
 const fs = require("fs");
 const videoshow = require("videoshow");
 const naturalSort = require("javascript-natural-sort");
-const gm = require("gm").subClass({ imageMagick: true });
+const gm = require("gm").subClass({
+	imageMagick: true
+});
 
 const originalDir = "./content/images/";
 const resizedDir = "./content/images/resized/";
@@ -81,17 +83,44 @@ async function robot() {
 		content.images = resizedImagesList;
 	}
 
-	async function setImagesInfo(){
+	async function setImagesInfo() {
 		images = content.images;
-		images.forEach(image => getImageSettings(image))
+		nextImage = 0;
+		imagesTimestamps = [];
+		for await (const image of images) {
+			nextImage = images.indexOf(image) + 3;
+			console.log(nextImage > images.length - 4);
+			imagesTimestamps.push({
+				startTime: await getImageTimestamps(image)[0],
+				endTime: await getImageTimestamps(images[nextImage])[0]
+			});
+		}
+		console.log(imagesTimestamps);
 	}
 
-	async function getImageSettings(image){
-		times = []
-		i = 0
-		matches = image.match(/(\d+\.\d)|(\-\d)/gm)
-		matches.forEach(match => console.log(parseFloat(match)));
+	async function getImageTimestamps(image) {
+		console.log(image);
+		times = [];
+		i = 0;
+		matches = image.match(/([^/-]?\d+\.\d)|([\-]\d+[\.]?\d?)|(undefined)/gm);
+		matches.forEach(match => {
+			if (match != "undefined") {
+				times.push(Math.abs(parseFloat(match)));
+			} else {
+				if (i == 0) {
+					times.push(0);
+					i++;
+				} else {
+					i--;
+					times.push(10);
+				}
+			}
+		});
+		console.log(times);
+
+		return times;
 	}
+
 	async function createVideo() {
 		images = content.images;
 		audioPath = content.audioPath;
