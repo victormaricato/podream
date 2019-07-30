@@ -9,7 +9,8 @@ const resizedDir = "./content/images/resized/";
 
 async function robot() {
 	const content = state.load();
-	await acquireImages();
+	//await acquireImages();
+	await setImagesInfo();
 	//await createVideo();
 	state.save(content);
 
@@ -34,7 +35,7 @@ async function robot() {
 
 	async function convertImage(image) {
 		return new Promise((resolve, reject) => {
-			const inputFile = image.filePath;
+			const inputFile = image.imagesInfo;
 			const outputFile = `${resizedDir}${image.fileName}-converted.png`;
 			const width = 1920;
 			const height = 1080;
@@ -79,12 +80,24 @@ async function robot() {
 
 		content.images = resizedImagesList;
 	}
+
+	async function setImagesInfo(){
+		images = content.images;
+		images.forEach(image => getImageSettings(image))
+	}
+
+	async function getImageSettings(image){
+		times = []
+		i = 0
+		matches = image.match(/(\d+\.\d)|(\-\d)/gm)
+		matches.forEach(match => console.log(parseFloat(match)));
+	}
 	async function createVideo() {
 		images = content.images;
 		audioPath = content.audioPath;
 		var videoOptions = {
 			fps: 25,
-			loop: 1, // seconds
+			loop: 3, // seconds
 			transition: true,
 			transitionDuration: 1, // seconds
 			videoBitrate: 1024,
