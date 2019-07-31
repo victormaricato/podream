@@ -11,12 +11,13 @@ const resizedDir = "./content/images/resized/";
 
 async function robot() {
 	const content = state.load();
-	//await acquireImages();
+	content.images = await acquireImages();
 	content.imagesInfo = await setImagesInfo();
 	await state.save(content);
 	await createVideo();
 
 	async function acquireImages() {
+		console.log("Acquiring Images");
 		originalFiles = fs.readdirSync(originalDir);
 		imagesList = [];
 		originalFiles.forEach(file => {
@@ -32,10 +33,11 @@ async function robot() {
 			await convertImage(image);
 		}
 
-		populateImageList();
+		return populateImageList();
 	}
 
 	async function convertImage(image) {
+		console.log("Converting image");
 		return new Promise((resolve, reject) => {
 			const inputFile = image.filePath;
 			const outputFile = `${resizedDir}${image.fileName}-converted.png`;
@@ -80,30 +82,29 @@ async function robot() {
 			}
 		}
 
-		return sentences;
+		return resizedImagesList;
 	}
 
 	function setImagesInfo() {
+		console.log("Setting images info");
 		timestamps = getImagesTimestamps();
 		imagesInfo = [];
 		images = content.images;
 		for (let i = 0; i < images.length; i++) {
 			index = getSentencesIndex(i);
 			caption = getImageCaption(index);
-			console.log(content.sentences[index]);
-			console.log(index);
 			imagesInfo.push({
 				path: images[i],
 				loop: setImageTime(timestamps, i),
 				caption: caption
 			});
 		}
-		//console.log(imagesInfo);
 		return imagesInfo;
 	}
 
 	function getImageCaption(index) {
 		//console.log(content.sentences[index]);
+		console.log("Index" + index + "\nSentence:" + content.sentences[index]);
 		if (content.sentences[index] != undefined) {
 			return content.sentences[index].text;
 		} else {
@@ -137,21 +138,21 @@ async function robot() {
 
 	function getSentencesIndex(i) {
 		if ((i - 2) % 3 == 0) {
-			return i - 2;
+			return (i - 2) / 3;
 		} else if ((i - 1) % 3 == 0) {
-			return i - 1;
+			return (i - 1) / 3;
 		} else {
-			return i;
+			return i / 3;
 		}
 	}
 
 	function setImageTime(timestamps, i) {
-		console.log(timestamps);
+		modifier = 0.15;
 		loop = timestamps[i]["endTime"] - timestamps[i]["startTime"];
 		if (loop > 10) {
-			return Math.log(loop) + 3;
+			return Math.log(loop) * modifier;
 		} else {
-			return loop + 3;
+			return loop * modifier;
 		}
 	}
 
@@ -176,6 +177,7 @@ async function robot() {
 	}
 
 	async function createVideo() {
+		console.log("Creating video");
 		images = content.imagesInfo;
 		audioPath = content.audioPath;
 		var videoOptions = {
