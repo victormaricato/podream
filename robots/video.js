@@ -12,9 +12,9 @@ const resizedDir = "./content/images/resized/";
 async function robot() {
 	const content = state.load();
 	//await acquireImages();
-	await setImagesInfo();
-	//await createVideo();
-	state.save(content);
+	content.imagesInfo = await setImagesInfo();
+	await state.save(content);
+	await createVideo();
 
 	async function acquireImages() {
 		originalFiles = fs.readdirSync(originalDir);
@@ -37,7 +37,7 @@ async function robot() {
 
 	async function convertImage(image) {
 		return new Promise((resolve, reject) => {
-			const inputFile = image.imagesInfo;
+			const inputFile = image.filePath;
 			const outputFile = `${resizedDir}${image.fileName}-converted.png`;
 			const width = 1920;
 			const height = 1080;
@@ -80,30 +80,86 @@ async function robot() {
 			}
 		}
 
-		content.images = resizedImagesList;
+		return sentences;
 	}
 
-	async function setImagesInfo() {
+	function setImagesInfo() {
+		timestamps = getImagesTimestamps();
+		imagesInfo = [];
+		images = content.images;
+		for (let i = 0; i < images.length; i++) {
+			index = getSentencesIndex(i);
+			caption = getImageCaption(index);
+			console.log(content.sentences[index]);
+			console.log(index);
+			imagesInfo.push({
+				path: images[i],
+				loop: setImageTime(timestamps, i),
+				caption: caption
+			});
+		}
+		//console.log(imagesInfo);
+		return imagesInfo;
+	}
+
+	function getImageCaption(index) {
+		//console.log(content.sentences[index]);
+		if (content.sentences[index] != undefined) {
+			return content.sentences[index].text;
+		} else {
+			return "---";
+		}
+	}
+
+	function getImagesTimestamps() {
 		images = content.images;
 		nextImage = 0;
 		imagesTimestamps = [];
-		for await (const image of images) {
+		for (const image of images) {
 			nextImage = images.indexOf(image) + 3;
-			console.log(nextImage > images.length - 4);
-			imagesTimestamps.push({
-				startTime: await getImageTimestamps(image)[0],
-				endTime: await getImageTimestamps(images[nextImage])[0]
-			});
+			nextImageBeyondLimit = nextImage > images.length - 4;
+			if (!nextImageBeyondLimit) {
+				imagesTimestamps.push({
+					startTime: processImagesTimestamps(image)[0],
+					endTime: processImagesTimestamps(images[nextImage])[0]
+				});
+			} else {
+				lastImageTimestamp = imagesTimestamps.length - 1;
+				imagesTimestamps.push({
+					startTime: imagesTimestamps[lastImageTimestamp]["endTime"],
+					endTime: imagesTimestamps[lastImageTimestamp]["endTime"] + 3
+				});
+			}
 		}
-		console.log(imagesTimestamps);
+
+		return imagesTimestamps;
 	}
 
-	async function getImageTimestamps(image) {
-		console.log(image);
+	function getSentencesIndex(i) {
+		if ((i - 2) % 3 == 0) {
+			return i - 2;
+		} else if ((i - 1) % 3 == 0) {
+			return i - 1;
+		} else {
+			return i;
+		}
+	}
+
+	function setImageTime(timestamps, i) {
+		console.log(timestamps);
+		loop = timestamps[i]["endTime"] - timestamps[i]["startTime"];
+		if (loop > 10) {
+			return Math.log(loop) + 3;
+		} else {
+			return loop + 3;
+		}
+	}
+
+	function processImagesTimestamps(image) {
 		times = [];
 		i = 0;
 		matches = image.match(/([^/-]?\d+\.\d)|([\-]\d+[\.]?\d?)|(undefined)/gm);
-		matches.forEach(match => {
+		for (const match of matches) {
 			if (match != "undefined") {
 				times.push(Math.abs(parseFloat(match)));
 			} else {
@@ -115,14 +171,12 @@ async function robot() {
 					times.push(10);
 				}
 			}
-		});
-		console.log(times);
-
+		}
 		return times;
 	}
 
 	async function createVideo() {
-		images = content.images;
+		images = content.imagesInfo;
 		audioPath = content.audioPath;
 		var videoOptions = {
 			fps: 25,
