@@ -11,13 +11,13 @@ const robots = {
 };
 
 async function start() {
-	//await robots.input();
-	//await robots.storage();
-	//await robots.transcribing();
-	//await robots.text();
-	//await robots.timestamp();
-	//await robots.searchTerm();
-	//await robots.image();
+	robots.input();
+	await robots.storage();
+	await robots.transcribing();
+	await robots.text();
+	await robots.timestamp();
+	await robots.searchTerm();
+	await robots.image();
 	await robots.video();
 }
 
