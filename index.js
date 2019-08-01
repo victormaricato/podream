@@ -1,5 +1,4 @@
 const robots = {
-	state: require("./robots/state.js"),
 	input: require("./robots/input.js"),
 	storage: require("./robots/storage.js"),
 	transcribing: require("./robots/transcribing.js"),

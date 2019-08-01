@@ -4,6 +4,7 @@ const sentenceBoundaryDetection = require("sbd");
 const client = new language.LanguageServiceClient();
 
 async function robot() {
+	console.log("> [text-analyser] Processing tests");
 	const content = state.load();
 
 	await processText();
@@ -13,6 +14,7 @@ async function robot() {
 
 	async function processText() {
 		splittedText = await splitText(content.transcription);
+		console.log("> [text-analyser] Splitting sentences");
 		await getSentences(splittedText);
 
 		function splitText(text) {
@@ -34,18 +36,21 @@ async function robot() {
 	}
 
 	async function analyseSentences() {
+		console.log("> [text-analyser] Analysing sentences");
 		for (const sentence of content.sentences) {
 			sentence.analysis = await analyseEntities(sentence);
 		}
 	}
 	async function analyseEntities(sentence) {
+		console.log("> [text-analyser] Getting sentence entities");
 		entityAnalysis = [];
 		document = {
 			content: sentence.text,
 			type: "PLAIN_TEXT"
 		};
+		console.log("> [text-analyser] Waiting for Google");
 		const [result] = await client.analyzeEntities({ document });
-
+		console.log("> [text-analyser] Got sentence entities");
 		const entities = result.entities;
 
 		entities.forEach(entity =>

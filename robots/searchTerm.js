@@ -2,7 +2,7 @@ const state = require("./state.js");
 
 async function robot() {
 	const content = state.load();
-
+	console.log("> [search-term analyser] Getting sentences search terms");
 	getRelevantEntities();
 
 	state.save(content);
@@ -15,6 +15,7 @@ async function robot() {
 	}
 
 	async function populateKeywords(sentence) {
+		console.log("> [search-term analyser] Filtering keywords");
 		sentence.keywords = [];
 		sentence.searchTerm = "";
 
@@ -29,6 +30,7 @@ async function robot() {
 	}
 
 	function chooseEntity(sentence) {
+		console.log("> [search-term analyser] Choosing sentence search term");
 		amountOfKeywords = sentence.keywords.length;
 		currentSentenceIndex = content.sentences.indexOf(sentence);
 		previousIndex = currentSentenceIndex - 2;

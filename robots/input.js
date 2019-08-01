@@ -11,7 +11,7 @@ function robot() {
 
 	function askFileName() {
 		return readline.question(
-			'Type the .WAV filename (it should be placed on "./content/audios"): '
+			'> [input-checker] Type the .WAV filename (it should be placed on "./content/audios"): '
 		);
 	}
 
@@ -20,13 +20,14 @@ function robot() {
 	}
 
 	function checkFile(path) {
+		console.log("> [input-checker] Checking if file is WAV...");
 		format = path.slice(-3);
 		if (fs.existsSync(path) && format == "wav") {
 			return path;
 		} else if (format != "wav") {
-			console.error("File is not .wav");
+			console.error("> [input-checker] File is not .wav");
 		} else {
-			console.error("File does not exists");
+			console.error("> [input-checker] File does not exists");
 		}
 	}
 }

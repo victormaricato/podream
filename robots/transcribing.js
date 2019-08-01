@@ -10,13 +10,16 @@ async function transcribe() {
 	const content = state.load();
 
 	await requestTranscription();
+	console.log("> [speech-recognition] Transcription completed");
 
 	state.save(content);
 
 	async function requestTranscription() {
+		console.log("> [speech-recognition] Initializing transcription");
 		const [operation] = await client.longRunningRecognize(getRequestInfo());
 		const [response] = await operation.promise();
 
+		console.log("> [speech-recognition] Processing transcription results");
 		response.results.forEach(result => {
 			detailedTranscription = processDetailedResult(result);
 		});
@@ -46,6 +49,7 @@ async function transcribe() {
 			audio: audio,
 			config: config
 		};
+		console.log("> [speech-recognition] Generated transcription settings");
 		return request;
 	}
 

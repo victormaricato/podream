@@ -17,7 +17,7 @@ async function robot() {
 	await createVideo();
 
 	async function acquireImages() {
-		console.log("Acquiring Images");
+		console.log("> [video-generator] Acquiring Images");
 		originalFiles = fs.readdirSync(originalDir);
 		imagesList = [];
 		originalFiles.forEach(file => {
@@ -37,7 +37,7 @@ async function robot() {
 	}
 
 	async function convertImage(image) {
-		console.log("Converting image");
+		console.log("> [video-generator] Converting image");
 		return new Promise((resolve, reject) => {
 			const inputFile = image.filePath;
 			const outputFile = `${resizedDir}${image.fileName}-converted.png`;
@@ -86,7 +86,7 @@ async function robot() {
 	}
 
 	function setImagesInfo() {
-		console.log("Setting images info");
+		console.log("> [video-generator] Setting images info");
 		timestamps = getImagesTimestamps();
 		imagesInfo = [];
 		images = content.images;
@@ -103,8 +103,6 @@ async function robot() {
 	}
 
 	function getImageCaption(index) {
-		//console.log(content.sentences[index]);
-		console.log("Index" + index + "\nSentence:" + content.sentences[index]);
 		if (content.sentences[index] != undefined) {
 			return content.sentences[index].text;
 		} else {
@@ -177,7 +175,7 @@ async function robot() {
 	}
 
 	async function createVideo() {
-		console.log("Creating video");
+		console.log("> [video-generator] Creating video");
 		images = content.imagesInfo;
 		audioPath = content.audioPath;
 		var videoOptions = {

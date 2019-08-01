@@ -10,6 +10,9 @@ async function store() {
 	async function uploadAudio(audioPath, fileName) {
 		const bucketName = "podream-audios";
 
+		console.log(
+			"> [GCP file-uploader] Uploading audio to Google Cloud Storage"
+		);
 		await storage.bucket(bucketName).upload(content.audioPath);
 
 		content.gcsUri = `gs://${bucketName}/${content.fileName}`;

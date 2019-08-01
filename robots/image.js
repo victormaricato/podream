@@ -10,8 +10,11 @@ const imageDownloader = require("image-downloader");
 async function robot() {
 	const content = state.load();
 
+	console.log("> [images-generator] Searching images");
 	await searchImagesBySentences();
+	console.log("> [images-generator] Got images... \nDownloading images!");
 	await downloadAndSaveImages();
+	console.log("> [images-generator] Images downloaded");
 
 	state.save(content);
 

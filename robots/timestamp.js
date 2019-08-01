@@ -3,6 +3,10 @@ const state = require("./state.js");
 async function robot() {
 	const content = state.load();
 
+	console.log(
+		"> [timestamps delivery-robot] Getting sentences and images timestamps"
+	);
+
 	await getSentencesTimestamp();
 
 	state.save(content);
