@@ -28,7 +28,6 @@ async function robot() {
 				await content.sentences.push({
 					text: sentence,
 					keywords: [],
-					images: [],
 					analysis: []
 				});
 			});

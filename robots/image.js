@@ -5,27 +5,36 @@ const customsearch = google.customsearch("v1");
 
 const googleSearchAPIKey = require("../credentials/gcp-credentials.json");
 
-const imageDownloader = require("image-downloader");
+const imageDownloader = require("node-image-downloader");
 
 async function robot() {
-	const content = state.load();
+	let content = state.load();
 
-	console.log("> [images-generator] Searching images");
-	await searchImagesBySentences();
-	console.log("> [images-generator] Got images... \nDownloading images!");
-	await downloadAndSaveImages();
-	console.log("> [images-generator] Images downloaded");
+	content.sentences = await searchImagesBySentences();
+
+	await downloadAndSaveImages(content);
 
 	state.save(content);
 
 	async function searchImagesBySentences() {
-		for (const sentence of content.sentences) {
+		console.log("> [images-generator] Searching images");
+		sentences = content.sentences;
+
+		for await (const sentence of sentences) {
 			results = await executeSearch(sentence);
-			sentence.imageURLs = results;
+			sentence.imageURLs = await results;
 		}
+		console.log(sentences);
+
+		console.log(
+			"> [images-generator] Got images... \n> [images-generator] Downloading images!"
+		);
+
+		return await sentences;
 	}
 
 	async function executeSearch(sentence) {
+		console.log(sentence.text);
 		const res = await customsearch.cse.list({
 			cx: googleSearchAPIKey.search_engine_id,
 			q: sentence.searchTerm,
@@ -42,14 +51,15 @@ async function robot() {
 	async function getImagesUrls(res) {
 		if (res.data.items !== undefined) {
 			imagesUrls = [];
-			for (const item of res.data.items) {
-				imagesUrls.push(item.link);
+			for await (const item of res.data.items) {
+				await imagesUrls.push(item.link);
 			}
-			return imagesUrls;
+			console.log(imagesUrls);
+			return await imagesUrls;
 		}
 	}
 
-	async function downloadAndSaveImages() {
+	async function downloadAndSaveImages(content) {
 		content.downloadedImages = [];
 
 		for (const sentence of content.sentences) {
@@ -57,27 +67,27 @@ async function robot() {
 			const endSecs = sentence.endSecs;
 			i = 0;
 
+			console.log(sentence.text);
+
 			for (const imgURL of sentence.imageURLs) {
 				try {
 					if (content.downloadedImages.includes(imgURL)) {
 						throw new Error("Image already downloaded");
 					}
 					i++;
-					await downloadAndSave(
-						imgURL,
-						`${startSecs}-${endSecs}(${i})-raw.png`
-					);
+					await downloadAndSave(imgURL, `${startSecs}-${endSecs}(${i})-raw`);
 					content.downloadedImages.push(imgURL);
 				} catch (error) {
 					console.log(error);
 				}
 			}
 		}
+		console.log("> [images-generator] Images downloaded");
 	}
 	async function downloadAndSave(url, fileName) {
-		return imageDownloader.image({
-			url: url,
-			dest: `./content/images/${fileName}`
+		return imageDownloader({
+			imgs: [{ uri: url, filename: `${fileName}` }],
+			dest: "./content/images/"
 		});
 	}
 }

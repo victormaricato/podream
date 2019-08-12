@@ -26,8 +26,10 @@ function robot() {
 			return path;
 		} else if (format != "wav") {
 			console.error("> [input-checker] File is not .wav");
+			askFileName();
 		} else {
 			console.error("> [input-checker] File does not exists");
+			askFileName();
 		}
 	}
 }

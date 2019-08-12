@@ -20,10 +20,7 @@ async function robot() {
 		sentence.searchTerm = "";
 
 		for (const entity of sentence.analysis) {
-			if (
-				(entity.type != "OTHER" && entity.type != "NUMBER") ||
-				/^[A-Z]/.test(entity.name[0])
-			) {
+			if (entity.type != "NUMBER" || /^[A-Z]/.test(entity.name[0])) {
 				sentence.keywords.push(entity);
 			}
 		}
@@ -105,9 +102,14 @@ async function robot() {
 						}
 					}
 				} catch {
-					sentence.searchTerm = "audio";
+					if (sentence.searchTerm.length == 0) {
+						sentence.searchTerm = "audio";
+					}
 				}
 			}
+		}
+		if (sentence.searchTerm.length == 0) {
+			sentence.searchTerm = "audio";
 		}
 	}
 }

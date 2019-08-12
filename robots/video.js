@@ -6,6 +6,8 @@ const gm = require("gm").subClass({
 	imageMagick: true
 });
 
+const isImage = require("is-image");
+
 const originalDir = "./content/images/";
 const resizedDir = "./content/images/resized/";
 
@@ -21,7 +23,7 @@ async function robot() {
 		originalFiles = fs.readdirSync(originalDir);
 		imagesList = [];
 		originalFiles.forEach(file => {
-			if (file.slice(-3) == "png") {
+			if (isImage(file)) {
 				imagesList.push({
 					filePath: originalDir + file,
 					fileName: file.slice(0, -8)
@@ -30,20 +32,32 @@ async function robot() {
 		});
 
 		for await (const image of imagesList) {
-			await convertImage(image);
+			isFileAImage = await fileIsAImage(image.filePath);
+
+			if (isFileAImage) {
+				await convertImage(image);
+			}
 		}
 
-		return populateImageList();
+		return await populateImageList();
 	}
 
-	async function convertImage(image) {
+	async function fileIsAImage(file) {
+		data = await fs.readFileSync(file);
+		if (data.includes("html" || !isImage(file))) {
+			return await false;
+		} else {
+			return await true;
+		}
+	}
+
+	function convertImage(image) {
 		console.log("> [video-generator] Converting image");
 		return new Promise((resolve, reject) => {
 			const inputFile = image.filePath;
 			const outputFile = `${resizedDir}${image.fileName}-converted.png`;
 			const width = 1920;
 			const height = 1080;
-
 			gm()
 				.in(inputFile)
 				.out("(")
@@ -95,8 +109,7 @@ async function robot() {
 			caption = getImageCaption(index);
 			imagesInfo.push({
 				path: images[i],
-				loop: setImageTime(timestamps, i),
-				caption: caption
+				loop: setImageTime(timestamps, i)
 			});
 		}
 		return imagesInfo;
@@ -145,12 +158,14 @@ async function robot() {
 	}
 
 	function setImageTime(timestamps, i) {
-		modifier = 0.15;
+		modifier = 3;
 		loop = timestamps[i]["endTime"] - timestamps[i]["startTime"];
-		if (loop > 10) {
-			return Math.log(loop) * modifier;
+		if (loop > 15) {
+			return loop * modifier * 10;
+		} else if (loop > 5) {
+			return loop * modifier * 10;
 		} else {
-			return loop * modifier;
+			return loop * modifier * 10;
 		}
 	}
 
@@ -167,7 +182,7 @@ async function robot() {
 					i++;
 				} else {
 					i--;
-					times.push(10);
+					times.push(5);
 				}
 			}
 		}
