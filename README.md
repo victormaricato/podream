@@ -49,5 +49,6 @@ To run, open a terminal in the root project dir and execute:
 * Generate a video with the original audio + images in given timestamps (extracted from image name) 
 -- Uses [videoshow](https://github.com/h2non/videoshow/) that uses FFMpeg
 
+Author: Victor Maricato. 2019
  
 
