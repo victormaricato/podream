@@ -9,7 +9,7 @@ Designed for Podcasts images purposes.
 Uses only Google Cloud Platform tools.
 
 ## Motivation
-This is POC was motivated by my addiction to podcasts and videos. I know that some podcasts have a curated video slideshow, but not all of them can give this attention to content delivery, since podcast production and editing is quite time-demending already. Also, a friend told me she could not watch podcasts due to lack of visual stimulation.
+This is POC was motivated by my addiction to podcasts and videos. I know that some podcasts have a curated video slideshow, but not all of them can give this attention to content delivery, since podcast production and editing is quite time-demending already. Also, a friend told me she could not consume podcasts due to lack of visual stimulation.
 
 ## Requirements:
 * [ffmpeg](https://github.com/adaptlearning/adapt_authoring/wiki/Installing-FFmpeg)
