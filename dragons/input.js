@@ -2,7 +2,7 @@ const readline = require("readline-sync");
 const state = require("./state.js");
 const fs = require("fs");
 
-function robot() {
+function dragon() {
 	const content = {};
 
 	content.fileName = askFileName();
@@ -34,4 +34,4 @@ function robot() {
 	}
 }
 
-module.exports = robot;
+module.exports = dragon;

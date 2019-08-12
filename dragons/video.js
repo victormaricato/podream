@@ -11,7 +11,7 @@ const isImage = require("is-image");
 const originalDir = "./content/images/";
 const resizedDir = "./content/images/resized/";
 
-async function robot() {
+async function dragon() {
 	const content = state.load();
 	content.images = await acquireImages();
 	content.imagesInfo = await setImagesInfo();
@@ -223,4 +223,4 @@ async function robot() {
 	}
 }
 
-module.exports = robot;
+module.exports = dragon;

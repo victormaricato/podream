@@ -1,6 +1,6 @@
 const state = require("./state.js");
 
-async function robot() {
+async function dragon() {
 	const content = state.load();
 
 	console.log(
@@ -29,7 +29,6 @@ async function robot() {
 				sentence.startSecs = content.detailedTranscription[b - c - 1].startSecs;
 				a++;
 				c = 0;
-				console.log(sentence);
 			} else {
 				c++;
 			}
@@ -37,4 +36,4 @@ async function robot() {
 	}
 }
 
-module.exports = robot;
+module.exports = dragon;
