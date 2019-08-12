@@ -3,7 +3,7 @@ const language = require("@google-cloud/language");
 const sentenceBoundaryDetection = require("sbd");
 const client = new language.LanguageServiceClient();
 
-async function robot() {
+async function dragon() {
 	console.log("> [text-analyser] Processing tests");
 	const content = state.load();
 
@@ -63,4 +63,4 @@ async function robot() {
 	}
 }
 
-module.exports = robot;
+module.exports = dragon;

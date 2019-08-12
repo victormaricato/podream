@@ -1,6 +1,6 @@
 const state = require("./state.js");
 
-async function robot() {
+async function dragon() {
 	const content = state.load();
 	console.log("> [search-term analyser] Getting sentences search terms");
 	getRelevantEntities();
@@ -114,4 +114,4 @@ async function robot() {
 	}
 }
 
-module.exports = robot;
+module.exports = dragon;

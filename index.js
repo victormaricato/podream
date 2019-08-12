@@ -1,23 +1,23 @@
-const robots = {
-	input: require("./robots/input.js"),
-	storage: require("./robots/storage.js"),
-	transcribing: require("./robots/transcribing.js"),
-	text: require("./robots/text.js"),
-	timestamp: require("./robots/timestamp.js"),
-	searchTerm: require("./robots/searchTerm.js"),
-	image: require("./robots/image.js"),
-	video: require("./robots/video.js")
+const dragons = {
+	input: require("./dragons/input.js"),
+	storage: require("./dragons/storage.js"),
+	transcribing: require("./dragons/transcribing.js"),
+	text: require("./dragons/text.js"),
+	timestamp: require("./dragons/timestamp.js"),
+	searchTerm: require("./dragons/searchTerm.js"),
+	image: require("./dragons/image.js"),
+	video: require("./dragons/video.js")
 };
 
 async function start() {
-	robots.input();
-	await robots.storage();
-	await robots.transcribing();
-	await robots.text();
-	await robots.timestamp();
-	await robots.searchTerm();
-	await robots.image();
-	await robots.video();
+	dragons.input();
+	await dragons.storage();
+	await dragons.transcribing();
+	await dragons.text();
+	await dragons.timestamp();
+	await dragons.searchTerm();
+	await dragons.image();
+	await dragons.video();
 }
 
 start();

@@ -7,7 +7,7 @@ const googleSearchAPIKey = require("../credentials/gcp-credentials.json");
 
 const imageDownloader = require("node-image-downloader");
 
-async function robot() {
+async function dragon() {
 	let content = state.load();
 
 	content.sentences = await searchImagesBySentences();
@@ -24,8 +24,6 @@ async function robot() {
 			results = await executeSearch(sentence);
 			sentence.imageURLs = await results;
 		}
-		console.log(sentences);
-
 		console.log(
 			"> [images-generator] Got images... \n> [images-generator] Downloading images!"
 		);
@@ -34,7 +32,6 @@ async function robot() {
 	}
 
 	async function executeSearch(sentence) {
-		console.log(sentence.text);
 		const res = await customsearch.cse.list({
 			cx: googleSearchAPIKey.search_engine_id,
 			q: sentence.searchTerm,
@@ -54,7 +51,6 @@ async function robot() {
 			for await (const item of res.data.items) {
 				await imagesUrls.push(item.link);
 			}
-			console.log(imagesUrls);
 			return await imagesUrls;
 		}
 	}
@@ -66,8 +62,6 @@ async function robot() {
 			const startSecs = sentence.startSecs;
 			const endSecs = sentence.endSecs;
 			i = 0;
-
-			console.log(sentence.text);
 
 			for (const imgURL of sentence.imageURLs) {
 				try {
@@ -92,4 +86,4 @@ async function robot() {
 	}
 }
 
-module.exports = robot;
+module.exports = dragon;
