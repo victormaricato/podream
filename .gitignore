@@ -71,5 +71,6 @@ content/audios/*.wav
 content/audios/*.mp3
 content/audios/*.ogg
 content/images/*.png
+content/images/*.jpg*
 content/images/resized/*.png
 content/videos/*.mp4

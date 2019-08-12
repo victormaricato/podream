@@ -158,14 +158,14 @@ async function robot() {
 	}
 
 	function setImageTime(timestamps, i) {
-		modifier = 3;
+		modifier = 1.25 ** 2;
 		loop = timestamps[i]["endTime"] - timestamps[i]["startTime"];
 		if (loop > 15) {
-			return loop * modifier * 10;
+			return loop * modifier;
 		} else if (loop > 5) {
-			return loop * modifier * 10;
+			return loop * modifier;
 		} else {
-			return loop * modifier * 10;
+			return loop * modifier;
 		}
 	}
 
