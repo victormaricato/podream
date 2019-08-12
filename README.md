@@ -25,6 +25,9 @@ brew install yarn
 
 ## Cloning Repo:
 ``` git clone https://github.com/maricatovictor/podream.git ```
+
+Run ``` yarn ``` on project root dir
+
 ## Usage
 In order to run it, you'll be required to insert your Google Cloud Computing credentials (api_key, search_engine_id, etc.) for using GCP tools. 
 
